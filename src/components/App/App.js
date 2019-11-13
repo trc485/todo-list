@@ -99,7 +99,7 @@ const App = () => {
                 } else {
                     const newTodos = todos.map(todo => (
                         todo.id === todoId
-                            ? {...todo, editing: false, title: submittedValue}
+                            ? {...todo, editing: false, title: submittedValue, error: null}
                             : todo
                     ));
                     setTodos(newTodos);
