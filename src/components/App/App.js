@@ -66,7 +66,12 @@ const App = () => {
 
         const onInputTextBlur = todo => {
             if (todo.title) {
-                toggleTodoEditing(todo.id);
+                const newTodos = todos.map(item => (
+                    item.id === todo.id
+                        ? {...item, editing: !item.editing, error: null}
+                        : item
+                ));
+                setTodos(newTodos);
             } else {
                 textInputRef.current.focus();
                 setTodoError(todo.id, {message: 'Please enter new todo title'});
