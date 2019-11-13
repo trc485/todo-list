@@ -20,8 +20,6 @@ const TodoListItem = forwardRef(({
         error,
     } = todo;
 
-    console.log(onBtnSelectionClick)
-
     return (
         <Row>
             <TodoSelectionIconWrapper>
@@ -67,7 +65,7 @@ const TodoListItem = forwardRef(({
                             <TodoIconWrapper>
                                 <Icon
                                     type="delete"
-                                    onClick={() => onBtnDeleteClick(id)}
+                                    onClick={onBtnDeleteClick(id)}
                                 />
                             </TodoIconWrapper>
                         </>

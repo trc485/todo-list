@@ -1,14 +1,18 @@
 import styled from 'styled-components';
 
 export const Row = styled.div`
+    width: 100%;
+    height: 100%
     display: flex;
-    height: 2.5rem;
-    padding: 1rem;
     flex-flow: row nowrap;
     justify-content: start;
     align-items: center;
+`;
+
+export const TodoSelectionIconWrapper = styled.span`
+    margin-right: 1rem;
     &:hover {
-        background-color: #f6f8fa;
+        cursor: pointer;
     }
 `;
 
@@ -25,16 +29,8 @@ export const ErrorMessage = styled.span`
     margin-left: 1rem;
 `;
 
-export const TodoSelectionIconWrapper = styled.span`
-    margin-right: 2rem;
-    margin-left: 1rem;
-        &:hover {
-        cursor: pointer;
-    }
-`;
-
 export const TodoIconWrapper = styled.span`
-    margin: 0 1rem;
+    margin-left: 1rem;
     &:hover {
         cursor: pointer;
     }

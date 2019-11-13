@@ -1,24 +1,25 @@
 import React, { forwardRef } from 'react';
+import { List } from 'antd';
 import TodoListItem from '../TodoListItem';
-import { ListContainer } from './styled';
+import { ListItem } from './styled';
 
-const TodoList = forwardRef(({
-                                 todos = [],
-                                 ...rest
-                             }, ref) => {
-    return todos.length === 0 ? null : (
-        <ListContainer>
-            {
-                todos.map(todo => (
-                    <TodoListItem
-                        key={todo.id}
-                        todo={todo}
-                        ref={ref}
-                        {...rest}
-                    />
-                ))
-            }
-        </ListContainer>
+const TodoList = forwardRef(({todos = [], ...rest}, ref) => {
+    return (
+        <div>
+            <List
+                bordered
+                dataSource={todos}
+                renderItem={todo => (
+                    <ListItem>
+                        <TodoListItem
+                            todo={todo}
+                            ref={ref}
+                            {...rest}
+                        />
+                    </ListItem>
+                )}
+            />
+        </div>
     );
 });
 
