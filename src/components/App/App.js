@@ -1,62 +1,34 @@
-import React, { useState, useRef, useEffect } from 'react';
-import nextId from "react-id-generator";
+import React, { useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import Layout from '../Layout';
 import TodoList from '../TodoList';
 import { Button, Icon } from 'antd';
 import showDeleteConfirm from '../ShowDeleteConfirm';
+import {
+    selectTodos,
+    toggleTodoSelected,
+    toggleTodoEditing,
+    addNewTodo,
+    deleteTodo,
+    setTodoTitle,
+    setTodoErrorMessage,
+} from '../../redux/ducks/todos';
+import { todosPropType } from '../../shapes';
+import { defaultProps } from '../../defaultProps';
 
-const initialTodos = [
-    {
-        id: nextId('todo'),
-        title: 'first todo',
-        selected: true,
-        editing: false,
-        error: null,
-    },
-];
+const App = ({
+                 todos = defaultProps.todos,
+                 toggleTodoSelected,
+                 toggleTodoEditing,
+                 addNewTodo,
+                 deleteTodo,
+                 setTodoTitle,
+                 setTodoErrorMessage
 
-const createNewTodo = () => ({
-    id: nextId('todo'),
-    title: '',
-    selected: false,
-    editing: true,
-    error: null,
-});
-
-const App = () => {
-
-        const [todos, setTodos] = useState(initialTodos);
+             }) => {
 
         const textInputRef = useRef(null);
-
-        const addNewTodo = () => {
-            const newTodo = createNewTodo();
-            setTodos([...todos, {...newTodo}]);
-        };
-
-        const deleteTodo = todoId => {
-            const newTodos = todos.filter(todo => todo.id !== todoId);
-            setTodos(newTodos);
-        };
-
-        const toggleTodoSelected = todoId => {
-            const newTodos = todos.map(todo => todo.id === todoId ? {...todo, selected: !todo.selected} : todo);
-            setTodos(newTodos);
-        };
-
-        const toggleTodoEditing = todoId => {
-            const newTodos = todos.map(todo => todo.id === todoId ? {...todo, editing: !todo.editing} : todo);
-            setTodos(newTodos);
-        };
-
-        const setTodoError = (todoId, error) => {
-            const newTodos = todos.map(todo => (
-                todo.id === todoId
-                    ? {...todo, error}
-                    : todo
-            ));
-            setTodos(newTodos);
-        };
 
         const todoBeingEdited = todos.find(todo => todo.editing === true); // todo-object or undefined
 
@@ -66,15 +38,11 @@ const App = () => {
 
         const onInputTextBlur = todo => {
             if (todo.title) {
-                const newTodos = todos.map(item => (
-                    item.id === todo.id
-                        ? {...item, editing: !item.editing, error: null}
-                        : item
-                ));
-                setTodos(newTodos);
+                setTodoErrorMessage(todo.id, '');
+                toggleTodoEditing(todo.id);
             } else {
+                setTodoErrorMessage(todo.id, 'Please enter new todo title');
                 textInputRef.current.focus();
-                setTodoError(todo.id, {message: 'Please enter new todo title'});
             }
         };
 
@@ -85,24 +53,21 @@ const App = () => {
         };
 
         const onInputTextOnChange = todoId => {
-            setTodoError(todoId, null);
+            setTodoErrorMessage(todoId, '');
         };
 
         const onInputTextSubmit = todoId => (submittedValue = '') => {
 
             if (submittedValue.length === 0) {
-                setTodoError(todoId, {message: 'Cannot submit an empty value!'});
+                setTodoErrorMessage(todoId, 'Cannot submit an empty value!');
             } else {
                 const todoWithSameTitle = findTodoWithSameTitle(submittedValue);
                 if (todoWithSameTitle && todoWithSameTitle.id !== todoId) {
-                    setTodoError(todoId, {message: 'This Todo already exists!'});
+                    setTodoErrorMessage(todoId, 'This Todo already exists!');
                 } else {
-                    const newTodos = todos.map(todo => (
-                        todo.id === todoId
-                            ? {...todo, editing: false, title: submittedValue, error: null}
-                            : todo
-                    ));
-                    setTodos(newTodos);
+                    setTodoTitle(todoId, submittedValue);
+                    setTodoErrorMessage(todoId, '');
+                    toggleTodoEditing(todoId);
                 }
             }
 
@@ -150,4 +115,27 @@ const App = () => {
     }
 ;
 
-export default App;
+const mapStateToProps = state => ({
+    todos: selectTodos(state),
+});
+
+const mapDispatchToProps = {
+    toggleTodoSelected,
+    toggleTodoEditing,
+    addNewTodo,
+    deleteTodo,
+    setTodoTitle,
+    setTodoErrorMessage,
+};
+
+App.propTypes = {
+    todos: todosPropType,
+    toggleTodoSelected: PropTypes.func,
+    toggleTodoEditing: PropTypes.func,
+    addNewTodo: PropTypes.func,
+    deleteTodo: PropTypes.func,
+    setTodoTitle: PropTypes.func,
+    setTodoErrorMessage: PropTypes.func,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

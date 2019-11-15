@@ -17,7 +17,7 @@ const TodoListItem = forwardRef(({
         selected,
         id,
         editing,
-        error,
+        errorMessage,
     } = todo;
 
     return (
@@ -44,9 +44,9 @@ const TodoListItem = forwardRef(({
                         : title
                 }
                 {
-                    error && (
+                    errorMessage && (
                         <ErrorMessage>
-                            {error.message}
+                            {errorMessage}
                         </ErrorMessage>
                     )
                 }

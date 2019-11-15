@@ -27,7 +27,7 @@ const EditTextValue = forwardRef(({
                     setValue(e.target.value);
                     onChange();
                 }}
-                onBlur={(e) => onBlur()}
+                onBlur={onBlur}
             />
         </form>
     );
