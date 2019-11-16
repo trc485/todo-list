@@ -1,17 +1,17 @@
-import React, { forwardRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Row, TodoTitleWrapper, TodoSelectionIconWrapper, TodoIconWrapper, ErrorMessage } from './styled';
 import Icon from '../Icon';
 import EditTextValue from '../EditTextValue';
 
-const TodoListItem = forwardRef(({
-                                     todo,
-                                     onBtnSelectionClick,
-                                     onBtnEditClick,
-                                     onBtnDeleteClick,
-                                     onInputTextBlur,
-                                     onInputTextOnChange,
-                                     onInputTextSubmit,
-                                 }, ref) => {
+const TodoListItem = ({
+                          todo,
+                          onBtnSelectionClick,
+                          onBtnEditClick,
+                          onBtnDeleteClick,
+                          onInputTextBlur,
+                          onInputTextOnChange,
+                          onInputTextSubmit,
+                      }) => {
     const {
         title,
         selected,
@@ -19,6 +19,21 @@ const TodoListItem = forwardRef(({
         editing,
         errorMessage,
     } = todo;
+
+    const textInputRef = useRef(null);
+
+    const onBlur = () => {
+        onInputTextBlur(todo);
+        if (editing) {
+            textInputRef.current.focus();
+        }
+    };
+
+    useEffect(() => {
+        if (editing) {
+            textInputRef.current.focus();
+        }
+    }, [editing, errorMessage]);
 
     return (
         <Row>
@@ -35,9 +50,9 @@ const TodoListItem = forwardRef(({
                             <EditTextValue
                                 originalValue={title}
                                 placeholder="Enter new todo title"
-                                onBlur={() => onInputTextBlur(todo)}
+                                onBlur={onBlur}
                                 onSubmit={onInputTextSubmit(id)}
-                                ref={ref}
+                                ref={textInputRef}
                                 onChange={() => onInputTextOnChange(id)}
                             />
                         )
@@ -73,6 +88,6 @@ const TodoListItem = forwardRef(({
             }
         </Row>
     );
-});
+};
 
 export default TodoListItem;

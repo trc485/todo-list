@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Layout from '../Layout';
@@ -28,8 +28,6 @@ const App = ({
 
              }) => {
 
-        const textInputRef = useRef(null);
-
         const todoBeingEdited = todos.find(todo => todo.editing === true); // todo-object or undefined
 
         const findTodoWithSameTitle = str => {
@@ -42,7 +40,6 @@ const App = ({
                 toggleTodoEditing(todo.id);
             } else {
                 setTodoErrorMessage(todo.id, 'Please enter new todo title');
-                textInputRef.current.focus();
             }
         };
 
@@ -80,17 +77,10 @@ const App = ({
             }
         };
 
-        useEffect(() => {
-            if (textInputRef && textInputRef.current) {
-                textInputRef.current.focus();
-            }
-        }, [todos]);
-
         return (
             <Layout>
                 <TodoList
                     todos={todos}
-                    ref={textInputRef}
                     onBtnSelectionClick={toggleTodoSelected}
                     onBtnEditClick={onBtnEditClick}
                     onBtnDeleteClick={showDeleteConfirm(deleteTodo)}

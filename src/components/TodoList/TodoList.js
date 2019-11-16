@@ -1,9 +1,9 @@
-import React, { forwardRef } from 'react';
+import React from 'react';
 import { List } from 'antd';
 import TodoListItem from '../TodoListItem';
 import { ListItem } from './styled';
 
-const TodoList = forwardRef(({todos = [], ...rest}, ref) => {
+const TodoList = ({todos = [], ...rest}) => {
     return (
         <div>
             <List
@@ -13,7 +13,6 @@ const TodoList = forwardRef(({todos = [], ...rest}, ref) => {
                     <ListItem>
                         <TodoListItem
                             todo={todo}
-                            ref={ref}
                             {...rest}
                         />
                     </ListItem>
@@ -21,6 +20,6 @@ const TodoList = forwardRef(({todos = [], ...rest}, ref) => {
             />
         </div>
     );
-});
+};
 
 export default TodoList;
