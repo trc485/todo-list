@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Button, Icon, List } from 'antd';
+import { Button, Icon } from 'antd';
 import TodoListItem from '../TodoListItem';
-import { ListItem } from './styled';
 import { findItemWithKeyValue } from '../../utilities';
 import showDeleteConfirm from '../ShowDeleteConfirm';
 import { defaultProps } from '../../defaultProps';
@@ -14,6 +13,7 @@ import {
     toggleTodoEditing,
     toggleTodoSelected
 } from '../../redux/ducks/todos';
+import TodoList from '../TodoList';
 
 const TodoListContainer = ({
                                todos = defaultProps.todos,
@@ -76,28 +76,25 @@ const TodoListContainer = ({
 
     return (
         <>
-            <List
-                bordered
+            <TodoList
                 dataSource={todos}
                 renderItem={todo => (
-                    <ListItem>
-                        <TodoListItem
-                            title={todo.title}
-                            selected={todo.selected}
-                            editing={todo.editing}
-                            errorMessage={todo.errorMessage}
-                            onBtnSelectionClick={() => toggleTodoSelected(todo.id)}
-                            onBtnEditClick={() => onBtnEditClick(todo.id)}
-                            onBtnDeleteClick={() => showDeleteConfirm({
-                                title: 'Are you sure to delete this todo?',
-                                content: 'Click Yes to continue',
-                                onConfirmDelete: () => deleteTodo(todo.id)
-                            })}
-                            onInputTextBlur={onInputTextBlur(todo.id)}
-                            onInputTextOnChange={onInputTextOnChange(todo.id)}
-                            onInputTextSubmit={onInputTextSubmit(todo.id)}
-                        />
-                    </ListItem>
+                    <TodoListItem
+                        title={todo.title}
+                        selected={todo.selected}
+                        editing={todo.editing}
+                        errorMessage={todo.errorMessage}
+                        onBtnSelectionClick={() => toggleTodoSelected(todo.id)}
+                        onBtnEditClick={() => onBtnEditClick(todo.id)}
+                        onBtnDeleteClick={() => showDeleteConfirm({
+                            title: 'Are you sure to delete this todo?',
+                            content: 'Click Yes to continue',
+                            onConfirmDelete: () => deleteTodo(todo.id)
+                        })}
+                        onInputTextBlur={onInputTextBlur(todo.id)}
+                        onInputTextOnChange={onInputTextOnChange(todo.id)}
+                        onInputTextSubmit={onInputTextSubmit(todo.id)}
+                    />
                 )}
             />
             <Button
