@@ -1,25 +1,28 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { List } from 'antd';
-import TodoListItem from '../TodoListItem';
 import { ListItem } from './styled';
+import { todosPropType } from '../../shapes';
+import { defaultProps } from '../../defaultProps';
+import { noop } from 'ramda-extension';
 
-const TodoList = ({todos = [], ...rest}) => {
+const TodoList = ({dataSource = defaultProps.todos, renderItem = noop}) => {
     return (
-        <div>
-            <List
-                bordered
-                dataSource={todos}
-                renderItem={todo => (
-                    <ListItem>
-                        <TodoListItem
-                            todo={todo}
-                            {...rest}
-                        />
-                    </ListItem>
-                )}
-            />
-        </div>
+        <List
+            bordered
+            dataSource={dataSource}
+            renderItem={(item) => (
+                <ListItem>
+                    {renderItem(item)}
+                </ListItem>
+            )}
+        />
     );
+};
+
+TodoList.propTypes = {
+    dataSource: todosPropType,
+    renderItem: PropTypes.func
 };
 
 export default TodoList;

@@ -1,20 +1,30 @@
 import React, { useState, forwardRef } from 'react';
+import { noop } from 'ramda-extension';
+import PropTypes from 'prop-types';
+
+/**API**/
+// value: string
+// placeholder: string
+// onBlur: function(value)
+// onSubmit: function(value)
+// onChange: function(value)
+
 
 const EditTextValue = forwardRef(({
-                                      originalValue = '',
+                                      value = '',
                                       placeholder = '',
-                                      onBlur,
-                                      onSubmit,
-                                      onChange,
+                                      onBlur = noop,
+                                      onSubmit = noop,
+                                      onChange = noop,
                                   }, ref) => {
 
-    const [value, setValue] = useState(originalValue);
+    const [state, setState] = useState(value);
 
     return (
         <form
             onSubmit={(e) => {
                 e.preventDefault();
-                onSubmit(value);
+                onSubmit(state);
             }}
         >
             <input
@@ -22,15 +32,23 @@ const EditTextValue = forwardRef(({
                 name="edit-text"
                 placeholder={placeholder}
                 ref={ref}
-                value={value}
+                value={state}
                 onChange={(e) => {
-                    setValue(e.target.value);
-                    onChange();
+                    setState(e.target.value);
+                    onChange(state);
                 }}
-                onBlur={onBlur}
+                onBlur={() => onBlur(state)}
             />
         </form>
     );
 });
+
+EditTextValue.propTypes = {
+    value: PropTypes.string,
+    placeholder: PropTypes.string,
+    onBlur: PropTypes.func,
+    onSubmit: PropTypes.func,
+    onChange: PropTypes.func,
+};
 
 export default EditTextValue;

@@ -1,29 +1,39 @@
 import React, { useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { Row, TodoTitleWrapper, TodoSelectionIconWrapper, TodoIconWrapper, ErrorMessage } from './styled';
 import Icon from '../Icon';
 import EditTextValue from '../EditTextValue';
+import { noop } from 'ramda-extension';
+
+/**API**/
+//  title: string
+//  selected: bool
+//  editing: bool
+//  errorMessage: string
+//  onBtnSelectionClick: function()
+//  onBtnEditClick: function()
+//  onBtnDeleteClick: function()
+//  onInputTextBlur: function(value)
+//  onInputTextOnChange: function(value)
+//  onInputTextSubmit: function(value)
 
 const TodoListItem = ({
-                          todo,
-                          onBtnSelectionClick,
-                          onBtnEditClick,
-                          onBtnDeleteClick,
-                          onInputTextBlur,
-                          onInputTextOnChange,
-                          onInputTextSubmit,
+                          title = '',
+                          selected = false,
+                          editing = false,
+                          errorMessage = '',
+                          onBtnSelectionClick = noop,
+                          onBtnEditClick = noop,
+                          onBtnDeleteClick = noop,
+                          onInputTextBlur = noop,
+                          onInputTextOnChange = noop,
+                          onInputTextSubmit = noop,
                       }) => {
-    const {
-        title,
-        selected,
-        id,
-        editing,
-        errorMessage,
-    } = todo;
 
     const textInputRef = useRef(null);
 
-    const onBlur = () => {
-        onInputTextBlur(todo);
+    const onBlur = value => {
+        onInputTextBlur(value);
         if (editing) {
             textInputRef.current.focus();
         }
@@ -33,14 +43,14 @@ const TodoListItem = ({
         if (editing) {
             textInputRef.current.focus();
         }
-    }, [editing, errorMessage]);
+    }, [editing]);
 
     return (
         <Row>
             <TodoSelectionIconWrapper>
                 <Icon
                     type={selected ? "circle-filled" : "circle-outlined"}
-                    onClick={() => onBtnSelectionClick(id)}
+                    onClick={onBtnSelectionClick}
                 />
             </TodoSelectionIconWrapper>
             <TodoTitleWrapper>
@@ -48,12 +58,12 @@ const TodoListItem = ({
                     editing
                         ? (
                             <EditTextValue
-                                originalValue={title}
+                                value={title}
                                 placeholder="Enter new todo title"
                                 onBlur={onBlur}
-                                onSubmit={onInputTextSubmit(id)}
+                                onSubmit={onInputTextSubmit}
                                 ref={textInputRef}
-                                onChange={() => onInputTextOnChange(id)}
+                                onChange={onInputTextOnChange}
                             />
                         )
                         : title
@@ -74,13 +84,13 @@ const TodoListItem = ({
                             <TodoIconWrapper>
                                 <Icon
                                     type="edit"
-                                    onClick={() => onBtnEditClick(id)}
+                                    onClick={onBtnEditClick}
                                 />
                             </TodoIconWrapper>
                             <TodoIconWrapper>
                                 <Icon
                                     type="delete"
-                                    onClick={onBtnDeleteClick(id)}
+                                    onClick={onBtnDeleteClick}
                                 />
                             </TodoIconWrapper>
                         </>
@@ -88,6 +98,19 @@ const TodoListItem = ({
             }
         </Row>
     );
+};
+
+TodoListItem.propTypes = {
+    title: PropTypes.string,
+    selected: PropTypes.bool,
+    editing: PropTypes.bool,
+    errorMessage: PropTypes.string,
+    onBtnSelectionClick: PropTypes.func,
+    onBtnEditClick: PropTypes.func,
+    onBtnDeleteClick: PropTypes.func,
+    onInputTextBlur: PropTypes.func,
+    onInputTextOnChange: PropTypes.func,
+    onInputTextSubmit: PropTypes.func
 };
 
 export default TodoListItem;

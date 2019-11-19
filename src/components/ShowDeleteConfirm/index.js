@@ -1,27 +1,30 @@
 import { Modal } from 'antd';
+import { noop } from 'ramda-extension';
 
 const {confirm} = Modal;
 
 /*
 This Modal component comes from antd library
-The API requires to pass a function to the onClick attribute of a button
+The API requires to pass this function to the onClick attribute of a button
+I modified it a bit to make it reusable
 https://ant.design/components/modal/#header
-Since this comes from a reusable library, and because of the way it was designed, as a function rather than a component,
-I will not use reusable logic here,
-I just prepare the function to be put into the todo delete button onClick attribute
 */
 
-const showDeleteConfirm = deleteTodoFunc => todoId => () => {
+const showDeleteConfirm = ({
+                               title = '',
+                               content = '',
+                               onConfirmDelete = noop
+                           }) => {
     confirm({
-        title: 'Are you sure you want to delete this todo?',
-        content: 'Press yes to confirm deletion',
+        title: title,
+        content: content,
         okText: 'Yes',
         okType: 'danger',
         cancelText: 'No',
         onOk() {
-            deleteTodoFunc(todoId);
-        },
+            onConfirmDelete();
+        }
     });
 };
 
-export default showDeleteConfirm
+export default showDeleteConfirm;
