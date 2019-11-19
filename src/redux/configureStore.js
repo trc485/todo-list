@@ -2,6 +2,8 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
 import todosReducer from './ducks/todos';
+import throttle from 'lodash.throttle';
+import { loadStateFromLocalStorage, saveStateToLocalStorage } from '../localStorage';
 
 const epicMiddleware = createEpicMiddleware();
 
@@ -15,12 +17,24 @@ const rootReducer = combineReducers({
 });
 
 export default function configureStore() {
-    const store = createStore(rootReducer, composeWithDevTools(
-        applyMiddleware(epicMiddleware),
-        // other store enhancers if any
-    ));
+
+    const persistedState = loadStateFromLocalStorage();
+
+    const store = createStore(rootReducer,
+        persistedState,
+        composeWithDevTools(
+            applyMiddleware(epicMiddleware),
+            // other store enhancers if any
+        )
+    );
 
     epicMiddleware.run(rootEpic);
+
+    store.subscribe(throttle(() => {
+        saveStateToLocalStorage({
+            todos: store.getState().todos
+        });
+    }, 1000));
 
     return store;
 }

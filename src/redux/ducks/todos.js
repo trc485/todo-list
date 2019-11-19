@@ -1,18 +1,11 @@
 import { path } from 'ramda';
-import nextId from 'react-id-generator';
+import { v4 } from 'node-uuid';
+import { defaultProps } from '../../defaultProps';
 
-const initialState = [
-    {
-        id: nextId('todo'),
-        title: 'first todo',
-        selected: true,
-        editing: false,
-        errorMessage: '',
-    },
-];
+const initialState = defaultProps.todos;
 
 const createNewTodo = () => ({
-    id: nextId('todo'),
+    id: v4(),
     title: '',
     selected: false,
     editing: true,

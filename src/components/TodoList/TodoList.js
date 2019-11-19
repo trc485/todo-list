@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { List } from 'antd';
+import { ConfigProvider, Empty, List } from 'antd';
 import { ListItem } from './styled';
 import { todosPropType } from '../../shapes';
 import { defaultProps } from '../../defaultProps';
@@ -11,17 +11,33 @@ import { noop } from 'ramda-extension';
 // I tried to keep same API as regards dataSource and render prop
 // https://ant.design/components/list/
 
+const customizeRenderEmpty = () => (
+    <Empty
+        description={
+            <span>
+                There are currently no todos. <br />
+                Click button "New Item" to add new todos.
+            </span>
+        }
+    />
+);
+
+
 const TodoList = ({dataSource = defaultProps.todos, renderItem = noop}) => {
     return (
-        <List
-            bordered
-            dataSource={dataSource}
-            renderItem={(item) => (
-                <ListItem>
-                    {renderItem(item)}
-                </ListItem>
-            )}
-        />
+        <ConfigProvider
+            renderEmpty={customizeRenderEmpty}
+        >
+            <List
+                bordered
+                dataSource={dataSource}
+                renderItem={(item) => (
+                    <ListItem>
+                        {renderItem(item)}
+                    </ListItem>
+                )}
+            />
+        </ConfigProvider>
     );
 };
 
