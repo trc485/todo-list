@@ -24,11 +24,6 @@ export const TodoTitleWrapper = styled.div`
     margin-right: auto;
 `;
 
-export const ErrorMessage = styled.span`
-    color: red;
-    margin-left: 1rem;
-`;
-
 export const TodoIconWrapper = styled.span`
     margin-left: 1rem;
     &:hover {

@@ -23,7 +23,7 @@ const customizeRenderEmpty = () => (
 );
 
 
-const TodoList = ({dataSource = defaultProps.todos, renderItem = noop}) => {
+const TodoList = ({dataSource = [defaultProps.todos], renderItem = noop}) => {
     return (
         <ConfigProvider
             renderEmpty={customizeRenderEmpty}

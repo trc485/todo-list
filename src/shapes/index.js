@@ -7,7 +7,6 @@ export const todoPropType = PropTypes.shape({
     title: PropTypes.string,
     selected: PropTypes.bool.isRequired,
     editing: PropTypes.bool.isRequired,
-    errorMessage: PropTypes.string,
 });
 
 export const todosPropType = PropTypes.arrayOf(todoPropType);

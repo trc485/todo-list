@@ -1,54 +1,90 @@
-import React, { useState, forwardRef } from 'react';
+import React, { useRef, useEffect } from 'react';
+import { Form, Input, Button, Icon } from 'antd';
+import { reduxForm, Field } from 'redux-form';
 import { noop } from 'ramda-extension';
 import PropTypes from 'prop-types';
 
-/**API**/
-// value: string
-// placeholder: string
-// onBlur: function(value)
-// onSubmit: function(value)
-// onChange: function(value)
+const TextInput = ({input, meta, ...rest}) => {
 
+    const textInputRef = useRef(null);
+    console.log(meta);
 
-const EditTextValue = forwardRef(({
-                                      value = '',
-                                      placeholder = '',
-                                      onBlur = noop,
-                                      onSubmit = noop,
-                                      onChange = noop,
-                                  }, ref) => {
-
-    const [state, setState] = useState(value);
+    useEffect(() => {
+        if (textInputRef) {
+            textInputRef.current.focus();
+        }
+    }, []);
 
     return (
-        <form
-            onSubmit={(e) => {
-                e.preventDefault();
-                onSubmit(state);
-            }}
+        <Form.Item
+            validateStatus={meta.touched && meta.error ? 'error' : ''}
+            help={meta.touched && meta.error ? meta.error : ''}
         >
-            <input
-                type="text"
-                name="edit-text"
-                placeholder={placeholder}
-                ref={ref}
-                value={state}
-                onChange={(e) => {
-                    setState(e.target.value);
-                    onChange(state);
+            <Input
+                prefix={<Icon type="edit" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                ref={textInputRef}
+                {...input}
+                // I need this hack to not fire blur event when clicking cancel btn
+                // this hack has to override the onBlur handler prop passed from redux-form
+                onBlur={event => {
+                    const {relatedTarget} = event;
+                    if (relatedTarget && ('btn-cancel-form' === relatedTarget.getAttribute('id'))) {
+                        event.preventDefault();
+                    } else {
+                        input.onBlur(event);
+                        textInputRef.current.focus();
+                    }
                 }}
-                onBlur={() => onBlur(state)}
+                {...rest}
+                type="text"
             />
-        </form>
+        </Form.Item>
     );
-});
-
-EditTextValue.propTypes = {
-    value: PropTypes.string,
-    placeholder: PropTypes.string,
-    onBlur: PropTypes.func,
-    onSubmit: PropTypes.func,
-    onChange: PropTypes.func,
 };
 
-export default EditTextValue;
+const EditTextValue = ({
+                           handleSubmit = noop,
+                           placeholder = '',
+                           onBtnCancelClick = noop
+                       }) => {
+    return (
+        <Form
+            layout="inline"
+            onSubmit={handleSubmit}
+        >
+            <Field
+                component={TextInput}
+                name="title"
+                placeholder={placeholder}
+            />
+            <Form.Item>
+                <Button
+                    type="primary"
+                    htmlType="submit"
+                >
+                    OK
+                </Button>
+            </Form.Item>
+            <Form.Item>
+                <Button
+                    // this id is needed to not fire blur event when clicking cancel btn
+                    id="btn-cancel-form"
+                    onClick={onBtnCancelClick}
+                >
+                    Cancel
+                </Button>
+            </Form.Item>
+        </Form>
+    );
+};
+
+EditTextValue.propTypes = {
+    placeholder: PropTypes.string,
+    handleSubmit: PropTypes.func,
+    onBtnCancelClick: PropTypes.func,
+};
+
+export default reduxForm({
+    // a unique name for the form
+    form: 'todo-title',
+})(EditTextValue);

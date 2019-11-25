@@ -1,5 +1,6 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
+import { reducer as formReducer } from 'redux-form';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
 import todosReducer from './ducks/todos';
 import throttle from 'lodash.throttle';
@@ -13,6 +14,7 @@ const rootEpic = combineEpics(
 
 const rootReducer = combineReducers({
     // State properties reducers go here,
+    form: formReducer,
     todos: todosReducer,
 });
 

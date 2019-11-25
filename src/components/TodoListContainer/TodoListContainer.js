@@ -4,11 +4,10 @@ import { Button, Icon } from 'antd';
 import TodoListItem from '../TodoListItem';
 import { findItemWithKeyValue } from '../../utilities';
 import showDeleteConfirm from '../ShowDeleteConfirm';
-import { defaultProps } from '../../defaultProps';
 import {
     addNewTodo,
     deleteTodo,
-    selectTodos, setTodoErrorMessage,
+    selectTodos,
     setTodoTitle,
     toggleTodoEditing,
     toggleTodoSelected
@@ -16,16 +15,18 @@ import {
 import TodoList from '../TodoList';
 
 const TodoListContainer = ({
-                               todos = defaultProps.todos,
+                               todos,
                                addNewTodo,
                                toggleTodoSelected,
                                toggleTodoEditing,
                                deleteTodo,
                                setTodoTitle,
-                               setTodoErrorMessage
                            }) => {
 
     const isEditingTodo = !!findItemWithKeyValue(todos, 'editing', true);
+    const findTodoWithSameTitle = (str = '') => {
+        return todos.find(todo => todo.title.toLowerCase() === str.toLowerCase());
+    };
 
     const onBtnNewItemClick = () => {
         if (!isEditingTodo) {
@@ -33,45 +34,30 @@ const TodoListContainer = ({
         }
     };
 
-    const findTodoWithSameTitle = str => {
-        return todos.find(todo => todo.title.toLowerCase() === str.toLowerCase());
-    };
-
-    const onInputTextBlur = todoId => () => {
-        const todo = findItemWithKeyValue(todos, 'id', todoId);
-        if (todo.title) {
-            setTodoErrorMessage(todo.id, '');
-            toggleTodoEditing(todo.id);
-        } else {
-            setTodoErrorMessage(todo.id, 'Please enter new todo title');
-        }
-    };
-
-    const onBtnEditClick = todoId => {
+    const onBtnEditClick = (todoId = '') => {
         if (!isEditingTodo) {
             toggleTodoEditing(todoId);
         }
     };
 
-    const onInputTextOnChange = todoId => () => {
-        setTodoErrorMessage(todoId, '');
+    const onSubmit = (todoId = '') => (values = {}) => {
+        const {title = ''} = values;
+        setTodoTitle(todoId, title);
+        toggleTodoEditing(todoId);
     };
 
-    const onInputTextSubmit = todoId => (value = '') => {
 
-        if (value.length === 0) {
-            setTodoErrorMessage(todoId, 'Cannot submit an empty value!');
-        } else {
-            const todoWithSameTitle = findTodoWithSameTitle(value);
-            if (todoWithSameTitle && todoWithSameTitle.id !== todoId) {
-                setTodoErrorMessage(todoId, 'This Todo already exists!');
-            } else {
-                setTodoTitle(todoId, value);
-                setTodoErrorMessage(todoId, '');
-                toggleTodoEditing(todoId);
-            }
+    const validate = (todoId = '') => (values = {}) => {
+        const errors = {};
+        const {title = ''} = values;
+        const todoWithSameTitle = findTodoWithSameTitle(title);
+        if (!title) {
+            errors.title = 'Please enter todo title!';
         }
-
+        if (!!todoWithSameTitle && todoWithSameTitle.id !== todoId) {
+            errors.title = 'This Todo already exists!';
+        }
+        return errors;
     };
 
     return (
@@ -83,17 +69,21 @@ const TodoListContainer = ({
                         title={todo.title}
                         selected={todo.selected}
                         editing={todo.editing}
-                        errorMessage={todo.errorMessage}
-                        onBtnSelectionClick={() => toggleTodoSelected(todo.id)}
+                        onBtnSelectClick={() => toggleTodoSelected(todo.id)}
                         onBtnEditClick={() => onBtnEditClick(todo.id)}
                         onBtnDeleteClick={() => showDeleteConfirm({
                             title: 'Are you sure to delete this todo?',
                             content: 'Click Yes to continue',
                             onConfirmDelete: () => deleteTodo(todo.id)
                         })}
-                        onInputTextBlur={onInputTextBlur(todo.id)}
-                        onInputTextOnChange={onInputTextOnChange(todo.id)}
-                        onInputTextSubmit={onInputTextSubmit(todo.id)}
+                        onSubmit={onSubmit(todo.id)}
+                        validate={validate(todo.id)}
+                        placeholder="Enter new todo title"
+                        onBtnCancelClick={
+                            todo.title
+                                ? () => toggleTodoEditing(todo.id)
+                                : () => deleteTodo(todo.id)
+                        }
                     />
                 )}
             />
@@ -123,7 +113,6 @@ const mapDispatchToProps = {
     addNewTodo,
     deleteTodo,
     setTodoTitle,
-    setTodoErrorMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TodoListContainer);
